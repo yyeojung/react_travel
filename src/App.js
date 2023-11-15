@@ -1,25 +1,43 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { darkTheme, lightTheme } from './style/theme';
+import styled, { ThemeProvider } from 'styled-components';
 import './App.css';
+//page
+import Home from './page/Home';
+import Setting from "./page/Setting";
+
+const Button = styled.button`
+    position:absolute;
+    top:0;
+    right:0;
+    border:1px solid red;
+`
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [theme, setTheme] = useState(true);
+    
+    const lightMode = () => {
+      setTheme(true);
+    }
+    const darkMode = () => {
+      setTheme(false);
+    }
+
+    return (
+        <ThemeProvider theme={theme ? lightTheme : darkTheme}>    
+            <div className="App">
+                <Router basename={process.env.PUBLIC_URL}>
+                    <Routes>
+                        <Route path="/" element={<Home/>}></Route>
+                        <Route path="/setting" element={<Setting/>}></Route>
+                    </Routes>
+                </Router>    
+                <Button onClick={darkMode}>dark</Button>        
+                <Button onClick={lightMode} style={{right:"50px"}}>light</Button>        
+            </div>
+        </ThemeProvider>
+    );
 }
 
 export default App;

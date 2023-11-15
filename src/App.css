@@ -1,38 +1,58 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+/* reset */
+html{font-size:7px;}
+@media all and (min-width:280px){html{font-size:7.777px;}}
+@media all and (min-width:290px){html{font-size:8.055px;}}
+@media all and (min-width:300px){html{font-size:8.333px;}}
+@media all and (min-width:310px){html{font-size:8.611px;}}
+@media all and (min-width:320px){html{font-size:9.166px;}}
+@media all and (min-width:330px){html{font-size:9.166px;}}
+@media all and (min-width:340px){html{font-size:9.444px;}}
+@media all and (min-width:350px){html{font-size:9.722px;}}
+@media all and (min-width:360px){html{font-size:10px;}}
+html,body {width:100%; height:100%;}
+body * {box-sizing: border-box;}
+html,body,h1,h2,h3,h4,h5,h6,div,p,blockquote,pre,code,address,ul,ol,li,menu,nav,section,article,aside,dl,dt,dd,table,thead,tbody,tfoot,label,caption,th,td,form,fieldset,legend,hr,input,button,textarea,object,figure,figcaption {margin:0;padding:0;}
+body{-webkit-text-size-adjust:none; word-wrap:break-word; word-break:break-all;}
+body.fixed{position: relative;}
+body,input,select,textarea,button,pre {border:none; font-size:1.6rem; color:#000; font-family:'NanumGothic';}
+ul,ol,li{list-style-type:none;}
+table{ border-spacing:0; }
+img,fieldset{border:0;}
+address,cite,code{font-style:normal; font-weight:normal;}
+em, i{ font-style:normal; }
+label,img,input,select,textarea,button{vertical-align:middle;}
+.hide,legend{overflow: hidden; display:block; position:absolute; border: 0; width: .1rem; height: .1rem; clip: rect(.1rem, .1rem, .1rem, .1rem);}
+hr{display:none;}
+main,header,section,nav,footer,aside,article,figure{display:block;}
+a{color:inherit;text-decoration:none;}
+button { cursor: pointer; color:inherit; background-color: transparent; font-weight:400; }
+pre{ white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+/* input */
+input {width:100%; font-size:inherit; color:inherit; transition:all .15s; box-sizing: border-box; vertical-align:middle; }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+input:focus{outline:none; border-color:none;}
 
-.App-link {
-  color: #61dafb;
-}
+input[type=password]::-moz-reveal,
+input[type=password]::-ms-reveal { display: none; width: 0; height: 0; }
+input::-webkit-input-placeholder { color:#9ba2ae; font-size:inherit;}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance:textfield;appearance:textfield; }
+input[type=text]::-ms-clear { display: none; }
+select{ -webkit-appearance:none; -moz-appearance:none; appearance:none; }
+select::-ms-expand{ display:none; }
+
+input {width:100%; border-radius:1rem; height:3.8rem; padding:1rem;} 
+input::placeholder {color:#9ba2ae;}
+textarea::placeholder {color:#9ba2ae; font-size:inherit;}
+
+ul::-webkit-scrollbar{width:18px; height:4px;}
+ul::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.5); border-radius:100px; background-clip:padding-box; border:7px solid transparent;}
+ul::-webkit-scrollbar-track{background-color:transparent; border-radius:100px; background-clip:padding-box; border:18px solid transparent;}
+
+
+.App {width: 100%; min-height:100vh; max-width:76.8rem; margin: auto; position: relative;}
+.marLeft_10 {margin-left:1rem;}
