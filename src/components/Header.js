@@ -8,6 +8,8 @@ const Headers = styled.header`
     display:flex;
     align-items:center;
     position: relative;
+    &.main_header {background:none};
+    &.sub_header {background:${props => props.theme.header}};
 `;
 const Logo = styled.img`
     height:3.5rem;
@@ -30,7 +32,7 @@ const SubTxt = styled.h2`
 function Header(props) {
     const theme = useContext(ThemeContext);
     return (
-        <Headers>
+        <Headers className={props.isMainPage ? 'main_header' : 'sub_header'}>
             {props.isMainPage ? 
                 <h1>
                     <Logo src={theme.logo}></Logo>
@@ -43,6 +45,22 @@ function Header(props) {
                 </>
             }
         </Headers>
+
+        
+// {props.isMainPage ?   // 자꾸 안되서 이렇게 헤더까지 만들어서 해야하나 했는데 클래스 주는 방법으로 찾음!
+//     <Headers $isMainPage={true}>
+//         <h1>
+//             <Logo src={theme.logo}></Logo>
+//         </h1>
+//     </Headers>
+//     :
+//     <Headers>
+//         <Link to="#" onClick={props.onClick}>
+//             <Arrow/>
+//         </Link>
+//         <SubTxt>{props.subTitle}</SubTxt>
+//     </Headers>
+// }
     )
 }
 

@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import checkIcon from '../image/icon/check.png'
+import {v4 as uuidv4} from 'uuid';//uuid import
+//components
 import Select from './Select';
+import Calendar from './Calendar';
 
 const ModalWrap = styled.form`
     width:100%;
     background:${props => props.theme.modal.bgColor};
-    position:absolute;
-    bottom:0;
+    position:fixed;
     border-radius:2rem 2rem 0 0;
     padding:2rem;
+    transition:all .3s; /* transition 효과 추가 */
 `;
 const InputWrap = styled.div`
     display:${props => props.visible ? 'none' : 'block'};
@@ -25,13 +28,6 @@ const InputTitle = styled.span`
     width:5.6rem;
     display:inline-block;
 `;
-// 삭제용
-const Datepicker = styled.input`
-    width:calc(100% - 5.6rem);
-    height:4.8rem;
-    background:${props => props.theme.modal.input};
-    border:${props => props.theme.modal.inputBorder};
-`
 const FixTxt = styled.div`
     display:inline-block;
     width:calc(50% - 3.3rem);
@@ -81,7 +77,7 @@ const Desc = styled.p`
     margin:.5rem 0 0 5.6rem;
 `
 const BtnWrap = styled.div`
-    margin-top:10rem;
+    margin-top:14rem;
     display: flex;
     justify-content: space-between;
 `;
@@ -96,25 +92,50 @@ const Button = styled.button`
 `;
 
 function HomeModal(props) {
-    const [currentValue, setCurrentValue] = useState('');
-    const [visible, setVisible] = useState(false);
+    const [currentValue, setCurrentValue] = useState(''); //화폐 value 가져오기
+    const [visible, setVisible] = useState(false); // 해외여행 토글
+    const [period, setPeriod] = useState('');
     const [inputValues, setInputValues] = useState({ //콤마  추가 input
         exchangeRate: '', 
         visibleBudget: '',
         budget: '',
         exchangeWon : ''
-    })
+    });
+    const [formData, setFormData] = useState({ //data 저장 input
+        sendTitle: '', 
+        sendDate: '',
+        sendPeriod: '',
+        sendRate : '',
+        sendBudget : ''
+    });
+    const tripData = JSON.parse(localStorage.getItem('trip')) || [];
 
-    const getCurrentValue = (value) => { //select 화폐 가져오기
-        setCurrentValue(value.substring(1));
+    //여행지 저장
+    const saveForm = () => { //!!!!로컬스테이지 저장부터 해야함
+        if ()
     }
-    const changeTrip = () => { //해외여행 체크
-        setVisible(!visible)
-    }
-    const onSubmit = (e) => { //form 이벤트 막기
+    //form 이벤트 막기
+    const onSubmit = (e) => { 
         e.preventDefault();
     }
-    const handleInputChange = (e) => { //콤마 추가 이벤트, 환율 계산 이벤트
+
+    //datepicker 여행기간
+    const travelPeriod = (e) => {
+        setPeriod(e.target.value)
+    }
+
+    //select 화폐 가져오기
+    const getCurrentValue = (value) => { 
+        setCurrentValue(value.substring(1));
+    }
+
+    //해외여행 체크
+    const changeTrip = () => { 
+        setVisible(!visible)
+    }
+
+    //콤마 추가 이벤트, 환율 계산 이벤트
+    const handleInputChange = (e) => { 
         const {name, value} = e.target;
         const [integerPart, decimalPart] = value.split('.'); //소수점 구분
         let processedValue = integerPart.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -128,38 +149,51 @@ function HomeModal(props) {
         })
     };
     useEffect(() => { // 환율 계산
-        setInputValues((prevInputValues) => {
-            const visibleBudget = parseFloat(prevInputValues.visibleBudget.replace(/[^\d.]/g, ''));
-            const exchangeRate = parseFloat(prevInputValues.exchangeRate.replace(/[^\d.]/g, ''));
+        setInputValues((prev) => {
+            const visibleBudget = parseFloat(prev.visibleBudget.replace(/[^\d.]/g, ''));
+            const exchangeRate = parseFloat(prev.exchangeRate.replace(/[^\d.]/g, ''));
     
             if (!isNaN(visibleBudget) && !isNaN(exchangeRate)) {
                 const total = visibleBudget * exchangeRate;
+                const totalprice = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); // 소수점 이하 2자리까지 표시하고 쉼표 추가
                 return {
-                    ...prevInputValues,
-                    exchangeWon: total.toFixed(2)
+                    ...prev,
+                    exchangeWon: totalprice
                 };
-            }
-    
-            return prevInputValues;
+            }    
+            return prev;
         });
     }, [inputValues.visibleBudget, inputValues.exchangeRate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 setInputValues 추가함.
     
+    useEffect(() => { // 셀렉트 값 변경되면 input value 빈칸으로
+        setInputValues(prev => ({
+            ...prev,
+            exchangeRate: '', 
+            visibleBudget: '',
+            exchangeWon: ''
+        }));
+    }, [currentValue]);
 
     return (
-        <ModalWrap onSubmit={onSubmit}>
+        <ModalWrap onSubmit={onSubmit} style={props.popup}>
             <InputWrap>
                 <InputTitle>여행지</InputTitle>
                 <Input 
                     type='text'
                     $isfull={true} // 오류가 나와서 $붙임
+                    placeholder='여행지를 입력해주세요'
                 />
             </InputWrap>
             <InputWrap>
                 <InputTitle>날짜</InputTitle>
-                    <Datepicker/>
+                    <Calendar
+                        setPeriod={setPeriod}
+                    />
                 <SubWrap>
                     <Input 
                         type='text'
+                        value={period}
+                        onChange={travelPeriod}
                     />
                     <CheckBox>
                         <Input id='trip' type='checkbox'/>
@@ -177,7 +211,6 @@ function HomeModal(props) {
                             value={inputValues.exchangeRate}
                             onChange={handleInputChange}
                             maxLength={13}
-                            id='exchangeRate'
                         />
                         <span>원</span>
                     </FixTxt>
@@ -196,7 +229,6 @@ function HomeModal(props) {
                     <Input 
                         type='text'
                         name='visibleBudget'
-                        id='visibleBudget'
                         value={inputValues.visibleBudget}
                         onChange={handleInputChange}
                         maxLength={13}
@@ -209,6 +241,7 @@ function HomeModal(props) {
                         $isleft={true}
                         name='exchangeWon'
                         value={inputValues.exchangeWon}
+                        disabled
                         onChange={handleInputChange}
                     />
                     <span>원</span>
@@ -230,6 +263,7 @@ function HomeModal(props) {
             <BtnWrap>
                 <Button
                     $isCancel={true}
+                    onClick={props.onClick}
                 >취소</Button>
                 <Button>{props.btnTxt}</Button>
             </BtnWrap>

@@ -20,9 +20,9 @@ const Plus = styled.i`
     left:50%;
     transform:translate(-50%, -50%);
 `;
-function AddBox() {
+function AddBox(props) {
   return (
-    <Add>
+    <Add onClick={props.onClick}>
         <Plus/>
     </Add>
   )

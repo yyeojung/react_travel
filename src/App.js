@@ -6,6 +6,7 @@ import './App.css';
 //page
 import Home from './page/Home';
 import Setting from "./page/Setting";
+import Calendar from "./components/Calendar";
 
 const Button = styled.button`
     position:absolute;
@@ -30,7 +31,8 @@ function App() {
                 <Router basename={process.env.PUBLIC_URL}>
                     <Routes>
                         <Route path="/" element={<Home/>}></Route>
-                        <Route path="/setting" element={<Setting/>}></Route>
+                        <Route path="/setting" element={<Setting lightMode={lightMode} darkMode={darkMode}/>}></Route>
+                        <Route path="/Calendar" element={<Calendar/>}></Route>
                     </Routes>
                 </Router>    
                 <Button onClick={darkMode}>dark</Button>        

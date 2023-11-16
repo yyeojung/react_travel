@@ -23,7 +23,14 @@ const SelectBox = styled.div`
         position:absolute;
         top:1.5rem;
         right:1rem;
+        transition: all .3s;
         background:url(${props => props.theme.modal.selectArrow})center center/ 2rem no-repeat;
+    }
+    &.active {
+        border:.1rem solid #6491ff;
+        &::before {
+            transform:rotate(180deg)
+        }
     }
 `;
 const Label = styled.label`
@@ -84,6 +91,7 @@ function Select(props) {
     return (
         <SelectBox 
             $marLeft={props.$marLeft} 
+            className={showOption ? 'active' : ''} //셀렉트 active 상태에서의 스타일을 위해 추가
             ref={selectRef}//셀렉트 영역 밖 클릭해도 닫힘
             onClick={() => setShowOptions((prev) => !prev)}
         >

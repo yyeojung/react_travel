@@ -10,6 +10,10 @@ import emptyCheck from '../image/icon/emptyCheck.png';
 import emptyCheckDark from '../image/icon/emptyCheck_dark.png';
 import selectArrow from '../image/icon/selectArrow.png';
 import selectArrowDark from '../image/icon/selectArrow_dark.png';
+import travelEdit from '../image/icon/travelEdit.png';
+import travelEditDark from '../image/icon/travelEdit_dark.png';
+import travelPlus from '../image/icon/travelPlus.png';
+import travelPlusDark from '../image/icon/travelPlus_dark.png';
 
 export const lightTheme = {
     logo: `${logoLight}`,
@@ -17,10 +21,25 @@ export const lightTheme = {
     mainColor: '#000',
     settingIcon:`${setting}`,
     arrowIcon: `${arrow}`,
+    header:`#fff`,
+    travelList: {
+        btnColor: '#fff',
+        boxColor: '#fff',
+        boxBorder: 'none',
+        editColor: '#bddff6',
+        toggleBg: '#d9d9d9',
+        emphasis: '#004dff',
+        editIcon: `${travelEdit}`,
+        plusIcon: `${travelPlus}`
+    },
+    setting: {
+        darkBorder:'#8a8b8e',
+        darkBg:'rgba(0,0,0,0.1)'
+    },
     addBox: {
         bgColor:'rgba(255,255,255,0.2)',
         border: '.1rem solid #fff',
-        plusIcon:`${plus}`
+        plusIcon:`${plus}`,
     },
     modal: {
         bgColor:`#fff`,
@@ -32,6 +51,10 @@ export const lightTheme = {
         disabledBorder:`#d7d8e9`,
         disabledTxt:`#a7afb7`,
         btn:`#6491ff`,
+    },
+    datepicker: {
+        dateShadow:`0 1px 6px 0 rgba(0, 0, 0, 0.2)`,
+        hover:'#f2f2f3',
     }
 }
 export const darkTheme = {
@@ -40,6 +63,21 @@ export const darkTheme = {
     mainColor: '#f0f1f2',
     settingIcon:`${settingDark}`,
     arrowIcon: `${arrowDark}`,
+    header:`#282929`,
+    travelList: {
+        btnColor: '#f0f1f2',
+        boxColor: '#282929',
+        boxBorder: '.1rem solid #4d5158',
+        editColor: '#f0f1f2',
+        toggleBg: 'rgba(217, 217, 217, 0.3);',
+        emphasis: '#6491ff',
+        editIcon: `${travelEditDark}`,
+        plusIcon: `${travelPlusDark}`
+    },
+    setting: {
+        darkBorder:'.1rem solid #4d5158',
+        darkBg:'#282929'
+    },
     addBox: {
         bgColor:'#282929',
         border: '.1rem solid #4d5158',
@@ -54,7 +92,11 @@ export const darkTheme = {
         disabled:`#393a3c`,
         disabledBorder:`#4d5158`,
         disabledTxt:`#656b71`,
-        btn:`#6f747a`,
+        btn:`#6f747a`
+    },
+    datepicker: {
+        dateShadow:`0 1px 6px 0 rgba(0, 0, 0, 0.1)`,
+        hover:'#282929'
     }
 }
 
