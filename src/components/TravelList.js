@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 
 const ListWrap = styled.div`
@@ -6,6 +7,9 @@ const ListWrap = styled.div`
     position:relative;
     & ul {
         padding-top:3rem;
+    }
+    & ul li ~ li {
+        margin-top: 2rem;
     }
 `;
 const List = styled.li`
@@ -92,28 +96,47 @@ const Country = styled.div`
     } 
 `
 function TravelList(props) {
-    const handleModal = () => {
-        props.addModal()
-    }
+    const navigate = useNavigate();
+    const trips = JSON.parse(localStorage.getItem('trips')) || [];
+    // trips를 날짜(Date) 기준으로 내림차순으로 정렬
+    const tripDate = (dateString) => {
+        const startDate = dateString.split(' - ')[0].replace(/\./g, ''); // "YYYY.MM.DD"에서 앞의 날짜 추출하고 점 제거
+        return parseInt(startDate); // 숫자로 변환하여 반환
+    };
+    
+    const sortedTrips = trips.sort((a, b) => {
+        const startDateA = tripDate(a.Date);
+        const startDateB = tripDate(b.Date);
+        return startDateB - startDateA;
+    });
+
+    const navigateDetail = useCallback(
+        (tripId) => navigate('/trip/' + tripId), [navigate]
+    )
     return (
         <ListWrap>
-            <AddBtn onClick={handleModal}>추가하기</AddBtn>
+            <AddBtn onClick={props.onClick}>추가하기</AddBtn>
             <ul>
-                <List>
-                    {/* {country &&} */}
-                    
-                    <Country>
-                        <input type="checkbox" id='country' />
-                        <label htmlFor="country"></label>
-                    </Country>
-                    
-                    <Edit onClick={handleModal}/> {/* 수정하기 */}
-                    <div>
-                        <Title>여수밤바다</Title>
-                        <Date>2023.10.18 ~ 2023.10.22 <span>(4박 5일)</span></Date>
-                    </div>
-                    <p>총지출 : <span>13,000,000원</span></p>
-                </List>
+                {sortedTrips.map((trip) => (
+                    <List
+                        key={trip.id}    
+                    >
+                        {trip.Checkbox &&
+                            <Country>
+                                <input type="checkbox" id={trip.id} />
+                                <label htmlFor={trip.id}></label>
+                            </Country>                            
+                        }
+                        <Edit 
+                            onClick={() => navigateDetail(trip.id)}
+                        /> 
+                        <div>
+                            <Title>{trip.Title}</Title>
+                            <Date>{trip.Date}<span>({trip.Period})</span></Date>
+                        </div>
+                        <p>총지출 : <span>13,000,000원</span></p>
+                    </List>
+                ))}
             </ul>
         </ListWrap>
     )

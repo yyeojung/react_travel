@@ -3,7 +3,7 @@ import { ko } from "date-fns/esm/locale";
 import DatePicker  from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import icon from '../image/icon/datepicker.png';
 
@@ -26,7 +26,7 @@ const DatePickerWrap = styled.div`//datepicker 스타일링을 위해 추가!
         height:2rem;
         background:url(${icon})center center/2rem no-repeat;
     }
-    button.example-custom-input { //datepicker input창
+    input { //datepicker input창
         width:100%;
         height: 4.8rem;
         text-align:left;
@@ -37,6 +37,7 @@ const DatePickerWrap = styled.div`//datepicker 스타일링을 위해 추가!
         border:${borderColor};
         &:focus {border:.1rem solid #6491ff};
     }
+    button.react-datepicker__close-icon {display:none;}
     .react-datepicker-popper[data-placement^=bottom] {padding-top:0}
     .react-datepicker__triangle {display:none;}
     .react-datepicker {
@@ -92,18 +93,39 @@ const DatePickerWrap = styled.div`//datepicker 스타일링을 위해 추가!
 function Calendar(props) {
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <button className="example-custom-input" onClick={onClick} ref={ref}>
-          {value}
-        </button>
-      ));
-    
+
     const handleDateChange = (dates) => {
         setDateRange(dates);
         const period = calDate(dates);
-            if (period) {
-                props.setPeriod(period);
-        }
+        if (period) {
+            props.setFormData(prev => ({
+                ...prev,
+                Period: period
+            }));
+            
+            //날짜 기간  //배열의 유효성을 살펴야 해서 삼항연산식으로 함
+            const getFormattedDate = (date) => { //날짜 두자리수로 맞추려고 추가..
+                const d = new Date(date);
+                const year = d.getFullYear();
+                let month = '' + (d.getMonth() + 1);
+                let day = '' + d.getDate();
+              
+                if (month.length < 2) {
+                  month = '0' + month;
+                }
+                if (day.length < 2) {
+                  day = '0' + day;
+                }
+              
+                return [year, month, day].join('.');
+              };
+            const startDate = dates[0] ? getFormattedDate(dates[0]) : ''; //공백과 .이 생겨서 추가
+            const endDate = dates[1] ? getFormattedDate(dates[1]) : '';
+            const formattedDate = `${startDate} - ${endDate}`;
+
+            // 가공된 문자열을 HomdModal.js로 전달
+            props.setDate(formattedDate);
+        } 
     }
     const calDate = (dates) => {
         if (dates[0] && dates[1]) {
@@ -125,8 +147,9 @@ function Calendar(props) {
                 startDate={startDate}
                 endDate={endDate}
                 onChange={handleDateChange}
-                customInput={<ExampleCustomInput />}
                 shouldCloseOnOutsideClick 
+                isClearable={true}
+                value={props.dateValue}
                 placeholderText='출발일, 도착일을 설정해주세요.'
             />
         </DatePickerWrap>

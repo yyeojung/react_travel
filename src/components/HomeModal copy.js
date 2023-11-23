@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components'
 import {v4 as uuidv4} from 'uuid';//uuid import
 //components
@@ -94,19 +94,23 @@ const Button = styled.button`
 `;
 
 function HomeModal(props) {
-    const [currentValue, setCurrentValue] = useState('달러'); //화폐 value 가져오기
+    const [currentValue, setCurrentValue] = useState(''); //화폐 value 가져오기
     const [visible, setVisible] = useState(false); // 해외여행 토글
+    const [period, setPeriod] = useState('');
     const {tripId} = useParams();
-    const navigate = useNavigate();
+    const [inputValues, setInputValues] = useState({ //콤마  추가 input
+        exchangeRate: '', 
+        visibleBudget: '',
+        budget: '',
+        exchangeWon : ''
+    });
     const [formData, setFormData] = useState({ //data 저장 input
         Title: '', 
         Date: '',
         Period: '',
         Rate : '',
         Budget : '',
-        VisibleBudget : '',
-        ExchangeWon: '',
-        Checkbox: '',
+        VisibleBudget : ''
     });
 
     //로컬 스토리지 생성
@@ -126,48 +130,39 @@ function HomeModal(props) {
                     Rate: selectTrip.Rate,
                     Budget: selectTrip.Budget,
                     VisibleBudget: selectTrip.VisibleBudget,
-                    Checkbox: selectTrip.Checkbox,
-                }));                
-                
-                setVisible(selectTrip.Checkbox);// 여행지 정보에서 Checkbox 값에 따라 visible 상태를 설정
-                setCurrentValue(selectTrip.Money);// 화폐값 저장
+                }))
             }
         }
     }, [tripId])
     
     //여행지 저장
     const saveForm = () => { 
-        const { Title, Period, Rate, Budget, VisibleBudget } = formData;
+        // const { Title, Period, Rate, Budget, VisibleBudget } = formData;
         
-        // 빈값 확인
-        if(visible) {
-            if (!Title || !Period || !Rate || !VisibleBudget) {
-                alert("빈 항목을 모두 입력해주세요!");
-                return;
-            }
-        } else {
-            if (!Title || !Period || !Budget) {
-                alert("빈 항목을 모두 입력해주세요!");
-                return;
-            }
-        }
+        //빈값 확인
+        // if(!visible) {
+        //     if (!Title || !Period || !Rate || !Budget || !VisibleBudget) {
+        //         alert("빈 항목을 모두 입력해주세요!");
+        //         return;
+        //     }
+        // } else {
+        //     if (!Title || !Period || !Budget) {
+        //         alert("빈 항목을 모두 입력해주세요!");
+        //         return;
+        //     }
+        // }
         
-        const tripData = {
-            Title: formData.Title,
-            Period: formData.Period,
-            Date: formData.Date,
-            Budget: formData.Budget,
-            Rate : formData.Rate,
-            VisibleBudget : formData.VisibleBudget,
-            Checkbox : formData.Checkbox,
-            Money: currentValue
-        }
         if (tripId) {
             const getTrip = trips.map(trip => {
                 if (trip.id === tripId) {
                     return {
                         ...trip,
-                        ...tripData
+                        Title: formData.Title,
+                        Period: period,
+                        Date: formData.Date,
+                        Budget: inputValues.budget,
+                        Rate : inputValues.exchangeRate,
+                        VisibleBudget : inputValues.visibleBudget,
                     };
                 }
                 return trip;
@@ -176,43 +171,17 @@ function HomeModal(props) {
         } else {
             const newTrip = {
                 id: uuidv4(),
-                ...tripData
+                Title: formData.Title,
+                Period: period,
+                Date: formData.Date,
+                Budget: inputValues.budget,
+                Rate : inputValues.exchangeRate,
+                VisibleBudget : inputValues.visibleBudget,
             };
             const updatedTrips = [...trips, newTrip];
             localStorage.setItem('trips', JSON.stringify(updatedTrips));
         }
-        //상위 컴포넌트에서 저장, 수정 이벤트
-        props.saveForm();
-
-        // 입력된 값들을 빈 칸으로 초기화
-        setFormData({
-            Title: '',
-            Period: '',
-            Date: '',
-            Budget: '',
-            Rate: '',
-            VisibleBudget: '',
-            Checkbox: '', // Checkbox가 boolean이면 false로 초기화
-            Money: ''
-        });
-        setCurrentValue('달러');
-        setVisible(false)
     };
-
-    //여행지 삭제
-    const deleteForm = () => {
-        if (tripId) {
-            const confirm = window.confirm('정말 삭제하시겠습니까?');
-            if(confirm) {
-                const updateTrip = trips.filter(trip => trip.id !== tripId)
-                localStorage.setItem('trips', JSON.stringify(updateTrip));
-                navigate('/');
-            }
-        } else {
-            props.onClick();
-        }
-    }
-
     //form 이벤트 막기
     const onSubmit = (e) => { 
         e.preventDefault();
@@ -223,39 +192,22 @@ function HomeModal(props) {
         setFormData(prev => ({
             ...prev,
             Date: getdate
-        }));
-        
+        }))
     }
 
     //datepicker 여행기간
     const travelPeriod = (e) => {
-        setFormData(prev => ({
-            ...prev,
-            Period: e.target.value
-        }));
+        setPeriod(e.target.value)
     }
 
     //select 화폐 가져오기
     const getCurrentValue = (value) => { 
         setCurrentValue(value.substring(1));
-        // setFormData(prev => ({ //select값 변경되면 input 빈값
-        //     ...prev,
-        //     Rate: '', 
-        //     VisibleBudget: '',
-        //     ExchangeWon: ''
-        // }));
     }
 
     //해외여행 체크
     const changeTrip = () => { 
         setVisible(!visible)
-    }   
-    //해외여행 체크값 저장
-    const handleCheck = (e) => {
-        setFormData(prev => ({
-            ...prev,
-            Checkbox: e.target.checked
-        }))
     }
 
     //콤마 추가 이벤트, 환율 계산 이벤트
@@ -267,28 +219,36 @@ function HomeModal(props) {
         if (decimalPart !== undefined) { //소수점 있을 때
             processedValue += '.' + decimalPart.replace(/\D/g, '');
         }
-        setFormData({
-            ...formData,
+        setInputValues({
+            ...inputValues,
             [name]: processedValue
         })
     };
     useEffect(() => { // 환율 계산
-        setFormData((prev) => {
-            const VisibleBudget = parseFloat(prev.VisibleBudget.replace(/[^\d.]/g, ''));
-            const Rate = parseFloat(prev.Rate.replace(/[^\d.]/g, ''));
+        setInputValues((prev) => {
+            const visibleBudget = parseFloat(prev.visibleBudget.replace(/[^\d.]/g, ''));
+            const exchangeRate = parseFloat(prev.exchangeRate.replace(/[^\d.]/g, ''));
     
-            if (!isNaN(VisibleBudget) && !isNaN(Rate)) {
-                const total = VisibleBudget * Rate;
-                const totalprice = total.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','); // 소수점 이하 2자리까지 표시하고 쉼표 추가
+            if (!isNaN(visibleBudget) && !isNaN(exchangeRate)) {
+                const total = visibleBudget * exchangeRate;
+                const totalprice = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); // 소수점 이하 2자리까지 표시하고 쉼표 추가
                 return {
                     ...prev,
-                    ExchangeWon: totalprice
+                    exchangeWon: totalprice
                 };
             }    
             return prev;
         });
-    }, [formData.VisibleBudget, formData.Rate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 inputValues 추가함.
+    }, [inputValues.visibleBudget, inputValues.exchangeRate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 inputValues 추가함.
     
+    useEffect(() => { // 셀렉트 값 변경되면 input value 빈칸으로
+        setInputValues(prev => ({
+            ...prev,
+            exchangeRate: '', 
+            visibleBudget: '',
+            exchangeWon: ''
+        }));
+    }, [currentValue]);
 
     return (
         <ModalWrap onSubmit={onSubmit} style={props.popup}>
@@ -308,21 +268,17 @@ function HomeModal(props) {
             <InputWrap>
                 <InputTitle>날짜</InputTitle>
                     <Calendar
+                        setPeriod={setPeriod}
                         setDate = {handleGetDate}
-                        dateValue = {formData.Date}
-                        setFormData={setFormData}
                     />
                 <SubWrap>
                     <Input 
                         type='text'
-                        value={formData.Period}
+                        value={period}
                         onChange={travelPeriod}
                     />
                     <CheckBox>
-                        <Input id='trip' type='checkbox' 
-                            checked={formData.Checkbox}
-                            onChange={handleCheck}
-                        />
+                        <Input id='trip' type='checkbox'/>
                         <Label htmlFor='trip' onClick={changeTrip}>해외여행</Label>
                     </CheckBox>
                 </SubWrap>
@@ -333,8 +289,8 @@ function HomeModal(props) {
                     <FixTxt>
                         <Input 
                             type='text'
-                            name='Rate'
-                            value={formData.Rate}
+                            name='exchangeRate'
+                            value={inputValues.exchangeRate}
                             onChange={handleInputChange}
                             maxLength={13}
                         />
@@ -354,8 +310,8 @@ function HomeModal(props) {
                 <FixTxt>
                     <Input 
                         type='text'
-                        name='VisibleBudget'
-                        value={formData.VisibleBudget}
+                        name='visibleBudget'
+                        value={inputValues.visibleBudget}
                         onChange={handleInputChange}
                         maxLength={13}
                     />
@@ -365,8 +321,8 @@ function HomeModal(props) {
                     <Input 
                         type='text'
                         $isleft={true}
-                        name='ExchangeWon'
-                        value={formData.ExchangeWon}
+                        name='exchangeWon'
+                        value={inputValues.exchangeWon}
                         disabled
                         onChange={handleInputChange}
                     />
@@ -377,8 +333,8 @@ function HomeModal(props) {
                 <FixTxt>
                     <Input 
                         type='text'
-                        name='Budget'
-                        value={formData.Budget}
+                        name='budget'
+                        value={inputValues.budget}
                         onChange={handleInputChange}
                         maxLength={13}
                     />
@@ -388,12 +344,10 @@ function HomeModal(props) {
             </InputWrap>
             <BtnWrap>
                 <Button
-                    type='button'
                     $isCancel={true}
-                    onClick={deleteForm}
+                    onClick={props.onClick}
                 >{props.leftBtn}</Button>
                 <Button
-                    type='submit'
                     onClick={saveForm}
                 >{props.rightBtn}
                 </Button>

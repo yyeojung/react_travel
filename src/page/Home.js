@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Header from './../components/Header';
 import AddBox from './../components/AddBox';
@@ -9,11 +9,11 @@ import TravelList from '../components/TravelList';
 
 const Wrap = styled.div`
     background:${props => props.theme.homeBg};
-    height:100vh;
+    min-height:100vh;
 `;
 const Contents = styled.div`
     position:relative;
-    padding:0 1.6rem;
+    padding:0 1.6rem 6rem;
 `;
 const Setting = styled.i`
     display:block;
@@ -38,6 +38,13 @@ const SubTitle = styled.h3`
 `;
 function Home() {
     const [isOpen, setIsOpen] = useState(false);
+    const [hasData, setHasData ] = useState(false);
+
+    //로컬스토리지에 값이 없으면 여행지 생성 박스 노출
+    useEffect(() => {
+        const trips = JSON.parse(localStorage.getItem('trips')) || [];
+        setHasData(trips.length > 0);
+    }, []);
 
     const addModal = () => {
         setIsOpen(true);
@@ -45,6 +52,7 @@ function Home() {
 
     const closeModal = () => {
         setIsOpen(false);
+        setHasData(true);
     }
     return (
         <Wrap>
@@ -56,24 +64,24 @@ function Home() {
                     <Setting/>
                 </Link>
                 <MainTitle>어디로 여행가시나요?</MainTitle>
-                {/* 수정아이콘 누르면 수정팝업, 추가 누르면 추가 팝업 */}
-                <TravelList  onClick={addModal}></TravelList> 
-                {/* {
-                    empty ?
+                {
+                    hasData ?
+                    <TravelList onClick={addModal}></TravelList>
+                :
                     <>
                         <SubTitle>여행지를 추가해보세요!</SubTitle>
                         <AddBox
                             onClick={addModal}
                         />
-                    </>
-                :
-                    <TravelList></TravelList>
-                } */}
+                    </>                    
+                }
             </Contents>
             {isOpen && <ModalBg onClick={closeModal}/>}
             <HomeModal
                 onClick={closeModal}
-                btnTxt={"추가"}
+                saveForm={closeModal}
+                leftBtn={"취소"}
+                rightBtn={"추가"}
                 popup={isOpen ? {bottom: '0'} : {bottom : '-100%'}}
             />
         </Wrap>

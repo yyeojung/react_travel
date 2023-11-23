@@ -14,6 +14,8 @@ import travelEdit from '../image/icon/travelEdit.png';
 import travelEditDark from '../image/icon/travelEdit_dark.png';
 import travelPlus from '../image/icon/travelPlus.png';
 import travelPlusDark from '../image/icon/travelPlus_dark.png';
+import edit from '../image/icon/edit.png';
+import editDark from '../image/icon/edit_dark.png';
 
 export const lightTheme = {
     logo: `${logoLight}`,
@@ -22,6 +24,12 @@ export const lightTheme = {
     settingIcon:`${setting}`,
     arrowIcon: `${arrow}`,
     header:`#fff`,
+    subPage: {
+        bgColor:'#fff',
+        divideLine:'#d7d8e9',
+        detailBg:'#e7eaf3',
+        editImg: `${edit}`
+    },
     travelList: {
         btnColor: '#fff',
         boxColor: '#fff',
@@ -64,6 +72,12 @@ export const darkTheme = {
     settingIcon:`${settingDark}`,
     arrowIcon: `${arrowDark}`,
     header:`#282929`,
+    subPage: {
+        bgColor:'#02050e',
+        divideLine:'#4d5158',
+        detailBg:'#282929',
+        editImg: `${editDark}`
+    },
     travelList: {
         btnColor: '#f0f1f2',
         boxColor: '#282929',
