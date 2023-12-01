@@ -42,8 +42,8 @@ input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance:textfield;appearance:textfield; }
 input[type=text]::-ms-clear { display: none; }
-select{ -webkit-appearance:none; -moz-appearance:none; appearance:none; }
-select::-ms-expand{ display:none; }
+/* select{ -webkit-appearance:none; -moz-appearance:none; appearance:none; }
+select::-ms-expand{ display:none; } */
 
 input {width:100%; border-radius:1rem; height:3.8rem; padding:1rem;} 
 input::placeholder {color:#9ba2ae;}

@@ -14,6 +14,7 @@ const ListWrap = styled.div`
 `;
 const List = styled.li`
     width:100%;
+    cursor: pointer;
     background:${props => props.theme.travelList.boxColor};
     color: ${props => props.theme.mainColor};
     border: ${props => props.theme.travelList.boxBorder};
@@ -110,7 +111,7 @@ function TravelList(props) {
         return startDateB - startDateA;
     });
 
-    const navigateDetail = useCallback(
+    const navigateEdit = useCallback(
         (tripId) => navigate('/trip/' + tripId), [navigate]
     )
     return (
@@ -128,7 +129,7 @@ function TravelList(props) {
                             </Country>                            
                         }
                         <Edit 
-                            onClick={() => navigateDetail(trip.id)}
+                            onClick={() => navigateEdit(trip.id)}
                         /> 
                         <div>
                             <Title>{trip.Title}</Title>

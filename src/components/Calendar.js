@@ -55,18 +55,32 @@ const DatePickerWrap = styled.div`//datepicker 스타일링을 위해 추가!
         border-width:.2rem .2rem 0 0;
         top:1.1rem;
     }
-    .react-datepicker__current-month {
-        font-size:1.3rem;
-        line-height:4rem;
-        border-bottom:${borderColor};
-        color:${txtColor};
-    }
     .react-datepicker__header {
         background:${bgColor};
         color:${txtColor};
         border:none;
         border-radius:1rem;
         padding:0;
+    }
+    .react-datepicker__current-month {
+        display: none;
+    }
+    .react-datepicker__header__dropdown {
+        border-bottom:${borderColor};
+        line-height:4rem;
+        display:flex;        
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+    .react-datepicker__header__dropdown .react-datepicker__month-dropdown-container--select {
+        margin: 0 .8rem;
+    }
+    .react-datepicker__header__dropdown select {
+        background:${bgColor};
+        color:${txtColor};
+        font-size: 1.3rem;
+        width: 6rem;
+        outline:none;
     }
     .react-datepicker__day-names {
         margin-bottom:-.6rem;
@@ -81,6 +95,9 @@ const DatePickerWrap = styled.div`//datepicker 스타일링을 위해 추가!
     }
     .react-datepicker__day--keyboard-selected, .react-datepicker__day--range-end, .react-datepicker__day--range-start  {
         background:#6491ff;
+    }    
+    .react-datepicker__day--outside-month {
+        color: ${props => props.theme.modal.disabledTxt};
     }
     .react-datepicker__day:hover  {
         background:${props => props.theme.datepicker.hover};
@@ -151,6 +168,9 @@ function Calendar(props) {
                 isClearable={true}
                 value={props.dateValue}
                 placeholderText='출발일, 도착일을 설정해주세요.'
+      showMonthDropdown
+      showYearDropdown
+      dropdownMode="select"
             />
         </DatePickerWrap>
     )

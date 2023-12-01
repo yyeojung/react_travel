@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Header from './../components/Header';
 import AddBox from './../components/AddBox';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import HomeModal from '../components/HomeModal';
 import ModalBg from '../components/ModalBg';
 import TravelList from '../components/TravelList';
@@ -52,7 +52,11 @@ function Home() {
 
     const closeModal = () => {
         setIsOpen(false);
+    }
+
+    const saveData = () => { // 저장이벤트 따로 주기 위해 만듦
         setHasData(true);
+        setIsOpen(false)
     }
     return (
         <Wrap>
@@ -79,7 +83,7 @@ function Home() {
             {isOpen && <ModalBg onClick={closeModal}/>}
             <HomeModal
                 onClick={closeModal}
-                saveForm={closeModal}
+                saveForm={saveData}
                 leftBtn={"취소"}
                 rightBtn={"추가"}
                 popup={isOpen ? {bottom: '0'} : {bottom : '-100%'}}
