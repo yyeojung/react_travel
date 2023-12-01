@@ -19,6 +19,16 @@ const ModalWrap = styled.form`
 const InputWrap = styled.div`
     display:${props => props.visible ? 'none' : 'block'};
     margin-top:1rem;
+    
+    & input:-webkit-autofill,
+    & input:-webkit-autofill:hover,
+    & input:-webkit-autofill:focus,
+    & input:-webkit-autofill:active {
+        -webkit-text-fill-color:${props => props.theme.mainColor};
+        -webkit-box-shadow: 0 0 0px 100rem ${props => props.theme.modal.input} inset;
+        box-shadow: 0 0 0px 100rem ${props => props.theme.modal.input} inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
 `;
 const SubWrap = styled.div`
     width:calc(100% - 5.6rem);
