@@ -126,7 +126,7 @@ function HomeModal(props) {
     useEffect(() => {
         if(tripId) {
             const selectTrip = trips.find(trip => trip.id === tripId);
-            console.log(selectTrip)
+            // console.log(selectTrip)
             if (selectTrip) {
                 setFormData(prev => ({
                     ...prev,
@@ -172,7 +172,7 @@ function HomeModal(props) {
             Checkbox : formData.Checkbox,
             Money: currentValue
         }
-        if (tripId) {
+        if (tripId) { //여행지 수정 저장
             const getTrip = trips.map(trip => {
                 if (trip.id === tripId) {
                     return {

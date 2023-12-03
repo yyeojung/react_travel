@@ -111,6 +111,12 @@ function TravelList(props) {
         return startDateB - startDateA;
     });
 
+    
+    //가계부 페이지
+    const navigateDetail = useCallback(
+        (tripId) => navigate('/detail/' + tripId), [navigate]
+    )
+    //수정 페이지
     const navigateEdit = useCallback(
         (tripId) => navigate('/trip/' + tripId), [navigate]
     )
@@ -121,6 +127,7 @@ function TravelList(props) {
                 {sortedTrips.map((trip) => (
                     <List
                         key={trip.id}    
+                        onClick={() => navigateDetail(trip.id)}
                     >
                         {trip.Checkbox &&
                             <Country>
@@ -129,7 +136,10 @@ function TravelList(props) {
                             </Country>                            
                         }
                         <Edit 
-                            onClick={() => navigateEdit(trip.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigateEdit(trip.id);
+                            }}
                         /> 
                         <div>
                             <Title>{trip.Title}</Title>

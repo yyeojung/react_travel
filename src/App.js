@@ -21,10 +21,10 @@ function App() {
     const [theme, setTheme] = useState(true);
     
     const lightMode = () => {
-      setTheme(true);
+        setTheme(true);
     }
     const darkMode = () => {
-      setTheme(false);
+        setTheme(false);
     }
 
     return (

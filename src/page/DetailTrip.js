@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import AddBox from '../components/AddBox';
 
@@ -35,6 +35,9 @@ const Money = styled.div`
         width:.1rem;
         height:6rem;
         background:${props => props.theme.subPage.divideLine};
+    }
+    & li {
+        text-align: center;
     }
 `
 const DetailMoney = styled.div`
@@ -79,95 +82,127 @@ const MoneyList = styled.div`
         text-align:right;
     }
 `
-const Total = styled.div`
+const Total = styled.div` 
     margin-top:1rem;
     text-align:right;
 `
 
 function DetailTrip() {
     const navigate = useNavigate();
-    // const trips = JSON.parse(localStorage.getItem('trips')) || [];
-  return (
-    <>
-        <Header
-            subTitle={"여행 지출내역"}
-            onClick={() => {navigate(-1)}}
-        />
-        <Wrap>
-            <TripInfo>
-                <ul>
-                    <li className='title'>필리핀</li>
-                    <li>202320222 (<span>1박박박</span>)</li>
-                    <li>총예산 : <span>10000</span>페소</li>
-                </ul>
-                <Money>
+    const {tripId} = useParams();
+    const [tripData, setTripData] = useState([]);
+
+    const trips = JSON.parse(localStorage.getItem('trips')) || [];
+    //데이터 가져오기
+    useEffect(() => {
+        if(tripId) {
+            const selectTrip = trips.find(trip => trip.id === tripId);
+            if(selectTrip) {
+                setTripData(prev => ({
+                    ...prev,
+                    Title: selectTrip.Title,
+                    Date: selectTrip.Date,
+                    Period: selectTrip.Period,
+                    Rate: selectTrip.Rate,
+                    Budget: selectTrip.Budget,
+                    VisibleBudget: selectTrip.VisibleBudget,
+                    Checkbox: selectTrip.Checkbox,
+                    Money: selectTrip.Money
+                }))
+            }
+        }
+    }, [tripId])
+
+
+
+    return (
+        <>
+            <Header
+                subTitle={"여행 지출내역"}
+                onClick={() => {navigate(-1)}}
+            />
+            <Wrap>
+                <TripInfo>
                     <ul>
-                        <li>총지출</li>
-                        <li><strong>0페소</strong></li>
+                        <li className='title'>{tripData.Title}</li>
+                        <li>{tripData.Date} (<span>{tripData.Period}</span>)</li>
+                        <li>총예산 : 
+                            <span>{
+                                tripData.Checkbox ?
+                                tripData.VisibleBudget :
+                                tripData.Budget
+                            }</span>
+                            {tripData.Money}
+                        </li>
                     </ul>
-                    <ul>
-                        <li>남은 돈</li>
-                        <li><strong>0페소</strong></li>
-                    </ul>
-                </Money>
-            </TripInfo>
-            <DetailMoney>
-                {/* <Empty>
-                    <h3>일정을 추가해보세요!</h3>
-                    <AddBox/>
-                </Empty> */}
-                <History>
-                    <h3>ddd</h3>
-                    <MoneyList>
-                        <table>
-                            <colgroup>
-                                <col />
-                                <col style={{width:'30%'}}/>
-                            </colgroup>
-                            <tbody>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                                <tr>
-                                    <td>호핑투어</td>
-                                    <td>100페소</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <Total>
-                            <span>총 지출금액 : <strong>2000페소</strong></span>
-                        </Total>
-                    </MoneyList>
-                </History>
-            </DetailMoney>            
-        </Wrap>
-    </>
-  )
+                    <Money>
+                        <ul>
+                            <li>총지출</li>
+                            <li><strong>0{tripData.Money}</strong></li>
+                        </ul>
+                        <ul>
+                            <li>남은 돈</li>
+                            <li><strong>0{tripData.Money}</strong></li>
+                        </ul>
+                    </Money>
+                </TripInfo>
+                <DetailMoney>
+                    <Empty>
+                        <h3>일정을 추가해보세요!</h3>
+                        <AddBox/>
+                    </Empty>
+                    {/* <History>
+                        <h3>ddd</h3>
+                        <MoneyList>
+                            <table>
+                                <colgroup>
+                                    <col />
+                                    <col style={{width:'30%'}}/>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                    <tr>
+                                        <td>호핑투어</td>
+                                        <td>100페소</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <Total>
+                                <span>총 지출금액 : <strong>2000페소</strong></span>
+                            </Total>
+                        </MoneyList>
+                    </History> */}
+                </DetailMoney>            
+            </Wrap>
+        </>
+    )
 }
 
 export default DetailTrip

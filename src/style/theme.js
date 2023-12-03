@@ -16,6 +16,10 @@ import travelPlus from '../image/icon/travelPlus.png';
 import travelPlusDark from '../image/icon/travelPlus_dark.png';
 import edit from '../image/icon/edit.png';
 import editDark from '../image/icon/edit_dark.png';
+import dayPlusIcon from '../image/icon/dayMoneyPlus.png';
+import dayPlusIconDark from '../image/icon/dayMoneyPlus_dark.png';
+import trashIcon from '../image/icon/trash.png';
+import trashIconDark from '../image/icon/trash_dark.png';
 
 export const lightTheme = {
     logo: `${logoLight}`,
@@ -59,6 +63,10 @@ export const lightTheme = {
         disabledBorder:`#d7d8e9`,
         disabledTxt:`#a7afb7`,
         btn:`#6491ff`,
+    },
+    day: {
+        plusIcon: `${dayPlusIcon}`,
+        trashIcon: `${trashIcon}`
     },
     datepicker: {
         dateShadow:`0 1px 6px 0 rgba(0, 0, 0, 0.2)`,
@@ -107,6 +115,10 @@ export const darkTheme = {
         disabledBorder:`#4d5158`,
         disabledTxt:`#656b71`,
         btn:`#6f747a`
+    },
+    day: {
+        plusIcon: `${dayPlusIconDark}`,
+        trashIcon: `${trashIconDark}`
     },
     datepicker: {
         dateShadow:`0 1px 6px 0 rgba(0, 0, 0, 0.1)`,
