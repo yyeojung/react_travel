@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrap = styled.div`
     background:${props => props.theme.homeBg};
-    height:100vh;
+    min-height:100vh;
 `
 const DayWrap = styled.div`
     padding: 3.2rem 1.6rem;
@@ -18,7 +18,7 @@ const DayWrap = styled.div`
         color:${props => props.theme.mainColor};
     }
 `
-const MoneyBox = styled.div`
+const MoneyBox = styled.form`
     border-radius : 1.5rem;
     padding:2rem;
     background:${props => props.theme.modal.bgColor};
@@ -45,15 +45,24 @@ const MoneyBox = styled.div`
         align-items:center;
         input {
             text-align:right;
+            border-radius:0;
         }     
-        span {
-            margin:0 .6rem;
-        }   
+        & input:-webkit-autofill,
+        & input:-webkit-autofill:hover,
+        & input:-webkit-autofill:focus,
+        & input:-webkit-autofill:active {
+            -webkit-text-fill-color:${props => props.theme.mainColor};
+            -webkit-box-shadow: 0 0 0px 100rem ${props => props.theme.modal.bgColor} inset;
+            box-shadow: 0 0 0px 100rem ${props => props.theme.modal.bgColor} inset;
+            transition: background-color 5000s ease-in-out 0s;
+        } 
         .delete {
             display:inline-block;
+            font-size:0;
             width:2rem;
             height:2rem;
             vertical-align:bottom;
+            margin-left:.8rem;
             background:url(${props => props.theme.day.trashIcon})center/ 2rem no-repeat;
         }
     }
@@ -74,8 +83,40 @@ const MoneyBox = styled.div`
             }
         }
     }
-`;
-const Button = styled.button`
+`
+const Total = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    color:${props => props.theme.mainColor};
+    & div.input_wrap {
+        min-width:5rem;
+        max-width:20rem;
+        padding:0;
+        border-radius:0;
+        height:2rem;
+        position:relative;
+        span {
+            display:block;
+            height:2rem;
+            min-width:5rem;
+            font-weight: bold;
+            text-align:right;
+        }
+        input {
+            position:absolute;
+            font-size:0;
+            top:0;
+            left:0;
+            background:transparent;
+            padding:0;
+            height:2rem;
+            width: 100%;
+        }
+    }
+`
+const SaveBtn = styled.button`
     width:100%;
     height: 4rem;
     border-radius:1rem;
@@ -86,6 +127,117 @@ const Button = styled.button`
 `
 function DayMoney() {    
     const navigate = useNavigate();
+    const {tripId} = useParams();
+    const [cost, setCost] = useState('0'); //지출금액
+    const [dayTitle, setDayTitle] = useState('');
+    const [list, setList] = useState([ //가계부 리스트 
+    {schedule: '', price: ''}
+    ]);
+    
+    const trips = JSON.parse(localStorage.getItem('trips')) || [];
+    const currentId = trips.find(trip => trip.id === tripId); // 로컬스토리지 현재 id
+
+    //저장 이벤트
+    const handleSave = () => {
+        const emptyInput = list.some(item => !item.schedule || !item.price);
+        if (emptyInput) {
+            alert("빈 항목을 입력해주세요!");
+            return;
+        } else if (!dayTitle) {
+            alert("일정 제목을 입력해주세요!");
+            return;
+        }
+        const updatedTrips = trips.map((trip) => {
+            if (trip.id === tripId) {
+                return {
+                    ...trip,
+                    totalCost: cost,
+                    dayTitle: dayTitle,
+                    daySchedule: list.map(item => ({
+                        schedule: item.schedule,
+                        price: item.price
+                    }))
+                };
+            }
+            return trip;
+        });
+        localStorage.setItem('trips', JSON.stringify(updatedTrips));
+        navigate(-1);
+    }
+    //지출금액 변경시마다 실행
+    useEffect(() => {
+        // 총 지출금액 계산 함수
+        const totalCost = () => {
+            let total = 0;
+            list.forEach((item) => {
+                const priceDeleteComma = item.price.replace(/\D/g, ''); // 콤마 제거
+                const priceNum = parseFloat(priceDeleteComma); // 숫자로 변환
+                if(!isNaN(priceNum)) {
+                    total += priceNum;
+                }
+            });
+            return total.toLocaleString();
+        }
+        setCost(totalCost());
+    }, [list])
+
+    //추가하기 버튼 이벤트
+    const handleAddList = () => { 
+        setList([...list, {schedule: '', price: ''}]);
+    }
+
+    //일정 제목 이벤트
+    const handleInputTitle = (e) => {
+        const value = e.target.value;
+        setDayTitle(value)
+    }
+
+    //일정 input 이벤트
+    const handleInputChange = (index, event) => {
+        const { name, value } = event.target;
+        const newList = [...list]; 
+        newList[index][name] = value;
+        
+        //가격 숫자 콤마 추가
+        if (name === 'price') {
+            const numberComma = value.replace(/\D/g, "");
+            const formattedValue = numberComma !== '' ? Number(numberComma).toLocaleString() : '';            
+            newList[index][name] = formattedValue;            
+        }
+        setList(newList);
+    }
+
+    //일정 삭제 이벤트
+    const handleDeleteList = (index) => {
+        const newList = [...list];
+        newList.splice(index, 1);
+        setList(newList);
+        
+        const updatedTrips = trips.map((trip) => {
+            if (trip.id === tripId) {
+                return {
+                    ...trip,
+                    daySchedule: newList.map(item => ({
+                        schedule: item.schedule,
+                        price: item.price
+                    }))
+                };
+            }
+            return trip;
+        });
+        localStorage.setItem('trips', JSON.stringify(updatedTrips));
+    }
+
+    //총 지출금액 이벤트
+    const updatedPrice = (e) => {
+        const value = e.target.value;
+        setCost(value)
+    }
+
+    //form 
+    const onSubmit = (e) => {
+        e.preventDefault();
+    }
 
     return (
         <Wrap>        
@@ -94,36 +246,53 @@ function DayMoney() {
                 onClick={() => {navigate(-1)}}
             />
             <DayWrap>
-                <input type="text" 
+                <input 
+                    type="text" 
                     className='day_title'
                     placeholder='여행일을 입력해주세요.'
+                    value={dayTitle}
+                    onChange={handleInputTitle}
                 />
-                <MoneyBox>
+                <MoneyBox onSubmit={onSubmit}>
                     <table>
                         <colgroup>
                             <col style={{width:"70%"}}/>
                             <col style={{width:"30%"}}/>
                         </colgroup>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <input 
-                                        type='text'
-                                        placeholder='일정을 입력해주세요.'
-                                    />
-                                </td>
-                                <td className='price'>
-                                    <input 
-                                        type='text'
-                                        placeholder='가격'
-                                    />
-                                    <span>원</span>
-                                    <i className='delete'></i>
-                                </td>
-                            </tr>
+                            {list.map((item, index) => (
+                                <tr key={index}>
+                                    <td>
+                                        <input 
+                                            type='text'
+                                            placeholder='일정을 입력해주세요.'
+                                            name='schedule'
+                                            value={item.schedule}
+                                            onChange={(e) => handleInputChange(index, e)}
+                                        />
+                                    </td>
+                                    <td className='price'>
+                                        <input 
+                                            type='text'
+                                            placeholder='가격'
+                                            name='price'
+                                            value={item.price}
+                                            onChange={(e) => handleInputChange(index, e)}
+                                        />
+                                        <button 
+                                            className='delete'
+                                            onClick={() => handleDeleteList(index)}
+                                        >
+                                            삭제버튼
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                             <tr>
                                 <td colSpan={2} className='add_plan'>
-                                    <button>
+                                    <button
+                                        onClick={handleAddList}
+                                    >
                                         <i/>
                                         추가하기
                                     </button>
@@ -131,8 +300,21 @@ function DayMoney() {
                             </tr>
                         </tbody>
                     </table>
+                    <Total>
+                        <span>총 지출금액 :</span> 
+                        <div className="input_wrap">
+                            <span>{cost}</span>
+                            <input 
+                                type='text'
+                                value={cost}
+                                onChange={updatedPrice}
+                                readOnly
+                            />
+                        </div>
+                        <span>{currentId.Checkbox ? currentId.Money : '원'}</span>
+                    </Total>
                 </MoneyBox>
-                <Button>저장</Button>
+                <SaveBtn onClick={handleSave}>저장</SaveBtn>
             </DayWrap>
         </Wrap>
     )

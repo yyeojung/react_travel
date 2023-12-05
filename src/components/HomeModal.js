@@ -121,9 +121,10 @@ function HomeModal(props) {
 
     //로컬 스토리지 생성
     const trips = JSON.parse(localStorage.getItem('trips')) || [];
-
+    
     //여행지 수정
-    useEffect(() => {
+    useEffect(() => {        
+        const trips = JSON.parse(localStorage.getItem('trips')) || [];
         if(tripId) {
             const selectTrip = trips.find(trip => trip.id === tripId);
             // console.log(selectTrip)
@@ -297,7 +298,7 @@ function HomeModal(props) {
             }    
             return prev;
         });
-    }, [formData.VisibleBudget, formData.Rate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 inputValues 추가함.
+    }, [formData.VisibleBudget, formData.Rate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 추가함.
     
 
     return (

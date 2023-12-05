@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Header from './../components/Header';
 import AddBox from './../components/AddBox';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import HomeModal from '../components/HomeModal';
 import ModalBg from '../components/ModalBg';
 import TravelList from '../components/TravelList';

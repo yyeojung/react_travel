@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -60,6 +60,14 @@ const History = styled.div`
         font-size:1.6rem;
         font-weight:bold;
     }
+    & .add_list {
+        font-size:0;
+        width:5rem;
+        height:5rem;
+        display:block;
+        margin: 5rem auto;
+        background:url(${props => props.theme.addBox.plusIcon})center/ 100% no-repeat;
+    }
 `
 const MoneyList = styled.div`
     cursor:pointer;
@@ -92,9 +100,9 @@ function DetailTrip() {
     const {tripId} = useParams();
     const [tripData, setTripData] = useState([]);
 
-    const trips = JSON.parse(localStorage.getItem('trips')) || [];
     //데이터 가져오기
     useEffect(() => {
+        const trips = JSON.parse(localStorage.getItem('trips')) || [];
         if(tripId) {
             const selectTrip = trips.find(trip => trip.id === tripId);
             if(selectTrip) {
@@ -113,8 +121,13 @@ function DetailTrip() {
         }
     }, [tripId])
 
+    //새일정 추가
+    const naviagteAddDay = useCallback(
+        () => navigate(`/detail/${tripId}/day`), [navigate, tripId]
+    )
 
-
+    //국내여행시에는 화폐단위가 원
+    const currency = tripData.Checkbox ? tripData.Money : '원';
     return (
         <>
             <Header
@@ -132,26 +145,28 @@ function DetailTrip() {
                                 tripData.VisibleBudget :
                                 tripData.Budget
                             }</span>
-                            {tripData.Money}
+                            {currency}
                         </li>
                     </ul>
                     <Money>
                         <ul>
                             <li>총지출</li>
-                            <li><strong>0{tripData.Money}</strong></li>
+                            <li><strong>0{currency}</strong></li>
                         </ul>
                         <ul>
                             <li>남은 돈</li>
-                            <li><strong>0{tripData.Money}</strong></li>
+                            <li><strong>0{currency}</strong></li>
                         </ul>
                     </Money>
                 </TripInfo>
                 <DetailMoney>
                     <Empty>
                         <h3>일정을 추가해보세요!</h3>
-                        <AddBox/>
+                        <AddBox
+                            onClick={naviagteAddDay}
+                        />
                     </Empty>
-                    {/* <History>
+                    <History>
                         <h3>ddd</h3>
                         <MoneyList>
                             <table>
@@ -172,33 +187,14 @@ function DetailTrip() {
                                         <td>호핑투어</td>
                                         <td>100페소</td>
                                     </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
                                 </tbody>
                             </table>
                             <Total>
                                 <span>총 지출금액 : <strong>2000페소</strong></span>
                             </Total>
                         </MoneyList>
-                    </History> */}
+                        <button className="add_list">추가하기</button>
+                    </History>
                 </DetailMoney>            
             </Wrap>
         </>

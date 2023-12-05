@@ -21,6 +21,7 @@ table{ border-spacing:0; }
 img,fieldset{border:0;}
 address,cite,code{font-style:normal; font-weight:normal;}
 em, i{ font-style:normal; }
+
 label,img,input,select,textarea,button{vertical-align:middle;}
 .hide,legend{overflow: hidden; display:block; position:absolute; border: 0; width: .1rem; height: .1rem; clip: rect(.1rem, .1rem, .1rem, .1rem);}
 hr{display:none;}

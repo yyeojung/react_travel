@@ -34,7 +34,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home/>}></Route>
                         <Route path="/detail/:tripId" element={<DetailTrip/>}></Route>
-                        <Route path="/day" element={<DayMoney/>}></Route>
+                        <Route path="/detail/:tripId/day" element={<DayMoney/>}></Route>
                         <Route path="/setting" element={<Setting lightMode={lightMode} darkMode={darkMode}/>}></Route>
                         <Route path="/trip/:tripId" element={<EditForm/>}></Route>
                     </Routes>
