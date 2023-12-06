@@ -127,7 +127,6 @@ function HomeModal(props) {
         const trips = JSON.parse(localStorage.getItem('trips')) || [];
         if(tripId) {
             const selectTrip = trips.find(trip => trip.id === tripId);
-            // console.log(selectTrip)
             if (selectTrip) {
                 setFormData(prev => ({
                     ...prev,

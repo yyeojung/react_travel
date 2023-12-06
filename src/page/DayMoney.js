@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../components/Header'
 import { useNavigate, useParams } from 'react-router-dom';
+import {v4 as uuidv4} from 'uuid';//uuid import
 import styled from 'styled-components';
+import Header from '../components/Header'
 
 const Wrap = styled.div`
     background:${props => props.theme.homeBg};
@@ -14,6 +15,7 @@ const DayWrap = styled.div`
         border-radius:0;
         height:auto;
         width:auto;
+        min-width:20rem;
         font-weight:bold;
         color:${props => props.theme.mainColor};
     }
@@ -116,54 +118,133 @@ const Total = styled.div`
         }
     }
 `
-const SaveBtn = styled.button`
-    width:100%;
-    height: 4rem;
-    border-radius:1rem;
+const BtnBox = styled.div`
     margin-top:2rem;
-    font-weight:bold;
-    color:${props => props.theme.mainColor};
-    background:${props => props.theme.modal.bgColor};
+    display:flex;
+    justify-content:space-between;
+    & button {
+        width: calc(50% - 6rem);
+        height: 4rem;
+        border-radius:1rem;
+        font-weight:bold;
+        color:${props => props.theme.mainColor};
+        background:${props => props.theme.modal.bgColor};
+    }
+    & .save_btn {
+    }
 `
 function DayMoney() {    
     const navigate = useNavigate();
-    const {tripId} = useParams();
+    const {tripId, keyValue} = useParams();
     const [cost, setCost] = useState('0'); //지출금액
     const [dayTitle, setDayTitle] = useState('');
     const [list, setList] = useState([ //가계부 리스트 
-    {schedule: '', price: ''}
+        {schedule: '', price: ''}
     ]);
     
     const trips = JSON.parse(localStorage.getItem('trips')) || [];
     const currentId = trips.find(trip => trip.id === tripId); // 로컬스토리지 현재 id
 
-    //저장 이벤트
+    //가계부 저장 이벤트
     const handleSave = () => {
         const emptyInput = list.some(item => !item.schedule || !item.price);
         if (emptyInput) {
             alert("빈 항목을 입력해주세요!");
             return;
         } else if (!dayTitle) {
-            alert("일정 제목을 입력해주세요!");
+            alert("여행일을 입력해주세요!");
             return;
         }
-        const updatedTrips = trips.map((trip) => {
-            if (trip.id === tripId) {
-                return {
-                    ...trip,
-                    totalCost: cost,
-                    dayTitle: dayTitle,
-                    daySchedule: list.map(item => ({
-                        schedule: item.schedule,
-                        price: item.price
-                    }))
-                };
+        if (keyValue) {//가계부 수정 저장
+            if (trips) {
+                const updatedSchedule = trips.map(trip => {
+                    if (trip.id === tripId) {
+                        return {
+                            ...trip,
+                            day: {
+                                ...trip.day,
+                                [keyValue]: {
+                                    ...trip.day[keyValue],
+                                    totalCost: cost,
+                                    dayTitle: dayTitle,
+                                    daySchedule: list.map(item => ({
+                                        schedule: item.schedule,
+                                        price: item.price
+                                    }))
+                                }
+                            }
+                        };
+                    }
+                    return trip;
+                })
+                localStorage.setItem('trips', JSON.stringify(updatedSchedule));
             }
-            return trip;
-        });
-        localStorage.setItem('trips', JSON.stringify(updatedTrips));
+        } else {
+            const updatedTrips = trips.map((trip) => {
+                if (trip.id === tripId) {
+                    const updatedDay = {
+                        totalCost: cost,
+                        dayTitle: dayTitle,
+                        daySchedule: list.map(item => ({
+                            schedule: item.schedule,
+                            price: item.price
+                        }))
+                    }
+                    const newDayKey = uuidv4();
+                    return {
+                        ...trip,
+                        day: {
+                            ...trip.day, //기존 일정
+                            [newDayKey]: updatedDay //새 일정
+                        }
+                    };
+                }
+                return trip;
+            });
+            localStorage.setItem('trips', JSON.stringify(updatedTrips));
+        }
         navigate(-1);
     }
+
+    //가계부 삭제 이벤트
+    const deleteDayPage = () => {
+        if (keyValue) {
+            const confirm = window.confirm('정말 삭제하시겠습니까?');
+            if (confirm) {
+                const updatedDay = trips.map(trip => {
+                    if (trip.id === tripId && trip.day[keyValue]) {
+                        const { [keyValue]: deletedDay, ...restOfDays } = trip.day;
+                        return {
+                            ...trip,
+                            day: restOfDays
+                        };
+                    }
+                    return trip
+                })
+                localStorage.setItem('trips', JSON.stringify(updatedDay))
+            }
+        }
+        navigate(-1);
+    }
+
+    //가계부 수정 페이지
+    useEffect(() => {                
+        if(keyValue) {
+            const dayKeys = Object.keys(currentId.day);
+            const currentKey = dayKeys.find((dayKey) => dayKey === keyValue);              
+            const editSchedule = currentId.day[currentKey];
+            if (currentKey) {
+                const newList = editSchedule.daySchedule.map(item => ({
+                    schedule: item.schedule,
+                    price: item.price
+                }));
+    
+                setList(newList);            
+            }
+            setDayTitle(editSchedule.dayTitle)
+        }
+    }, []) //처음 렌더링 될 떄만 실행하게 함
+
     //지출금액 변경시마다 실행
     useEffect(() => {
         // 총 지출금액 계산 함수
@@ -212,20 +293,6 @@ function DayMoney() {
         const newList = [...list];
         newList.splice(index, 1);
         setList(newList);
-        
-        const updatedTrips = trips.map((trip) => {
-            if (trip.id === tripId) {
-                return {
-                    ...trip,
-                    daySchedule: newList.map(item => ({
-                        schedule: item.schedule,
-                        price: item.price
-                    }))
-                };
-            }
-            return trip;
-        });
-        localStorage.setItem('trips', JSON.stringify(updatedTrips));
     }
 
     //총 지출금액 이벤트
@@ -249,7 +316,7 @@ function DayMoney() {
                 <input 
                     type="text" 
                     className='day_title'
-                    placeholder='여행일을 입력해주세요.'
+                    placeholder='여행일을 입력해주세요.✏️'
                     value={dayTitle}
                     onChange={handleInputTitle}
                 />
@@ -314,10 +381,24 @@ function DayMoney() {
                         <span>{currentId.Checkbox ? currentId.Money : '원'}</span>
                     </Total>
                 </MoneyBox>
-                <SaveBtn onClick={handleSave}>저장</SaveBtn>
+                <BtnBox>
+                    <button 
+                        className="close_btn"
+                        onClick={deleteDayPage}
+                    >
+                    {keyValue ? '삭제' : '취소'}
+                    </button>
+                    <button 
+                        className="save_btn" 
+                        onClick={handleSave}
+                    >
+                    저장
+                    </button>
+                </BtnBox>
             </DayWrap>
         </Wrap>
     )
 }
 
 export default DayMoney
+

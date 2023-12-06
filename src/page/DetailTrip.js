@@ -45,6 +45,15 @@ const DetailMoney = styled.div`
     border-radius:2rem 2rem 0 0;
     min-height:calc(100vh - 29.1rem);
     background:${props => props.theme.subPage.detailBg};
+    
+    & .add_list {
+        font-size:0;
+        width:5rem;
+        height:5rem;
+        display:block;
+        margin: 5rem auto;
+        background:url(${props => props.theme.addBox.plusIcon})center/ 100% no-repeat;
+    }
 `
 const Empty = styled.div`
     & h3 {
@@ -60,14 +69,7 @@ const History = styled.div`
         font-size:1.6rem;
         font-weight:bold;
     }
-    & .add_list {
-        font-size:0;
-        width:5rem;
-        height:5rem;
-        display:block;
-        margin: 5rem auto;
-        background:url(${props => props.theme.addBox.plusIcon})center/ 100% no-repeat;
-    }
+    margin-bottom:3rem;
 `
 const MoneyList = styled.div`
     cursor:pointer;
@@ -99,6 +101,7 @@ function DetailTrip() {
     const navigate = useNavigate();
     const {tripId} = useParams();
     const [tripData, setTripData] = useState([]);
+    const [hasSchedule, setHasSchedule] = useState(false);
 
     //데이터 가져오기
     useEffect(() => {
@@ -115,12 +118,42 @@ function DetailTrip() {
                     Budget: selectTrip.Budget,
                     VisibleBudget: selectTrip.VisibleBudget,
                     Checkbox: selectTrip.Checkbox,
-                    Money: selectTrip.Money
-                }))
+                    Money: selectTrip.Money,
+                    day: selectTrip.day
+                }));
+                //day가 있으면 가계부 리스트 보이기
+                if (selectTrip.day) {
+                    setHasSchedule(true);
+                  } 
+                }
             }
-        }
-    }, [tripId])
+        }, [tripId])
 
+    //총 지출금액 계산
+    const tripTotalCost = () => {
+        let totalCost = 0;
+        if (tripData.day) {
+            const days = Object.values(tripData.day);
+            days.forEach((day) => {
+                const deleteComma = day.totalCost.replace(/\D/g, ''); // 콤마 제거
+                const costNum = parseFloat(deleteComma); // 숫자로 변환
+                if(!isNaN(costNum)) {
+                    totalCost += costNum;
+                }
+            });
+        }
+        return totalCost.toLocaleString();
+    }
+    //남은 돈 계산
+    const remainingMoney = () => {
+        const totalBudget = tripData.Checkbox ? 
+        (tripData.VisibleBudget ? tripData.VisibleBudget.toString().replace(/\D/g, '') : '') :
+        (tripData.Budget ? tripData.Budget.toString().replace(/\D/g, '') : '');
+
+        const deleteCommaCost = tripTotalCost().replace(/\D/g, '');
+        const calculateMoney = totalBudget - deleteCommaCost;
+        return calculateMoney.toLocaleString();
+    }
     //새일정 추가
     const naviagteAddDay = useCallback(
         () => navigate(`/detail/${tripId}/day`), [navigate, tripId]
@@ -128,6 +161,13 @@ function DetailTrip() {
 
     //국내여행시에는 화폐단위가 원
     const currency = tripData.Checkbox ? tripData.Money : '원';
+
+    //가계부 수정페이지 이동
+    const navigateDayHistory = useCallback((e) => {
+        const keyValue = e.currentTarget.dataset.key;
+        navigate(`/detail/${tripId}/${keyValue}`);
+    }, [navigate, tripId]);    
+
     return (
         <>
             <Header
@@ -151,50 +191,56 @@ function DetailTrip() {
                     <Money>
                         <ul>
                             <li>총지출</li>
-                            <li><strong>0{currency}</strong></li>
+                            <li><strong>{tripTotalCost()}{currency}</strong></li>
                         </ul>
                         <ul>
                             <li>남은 돈</li>
-                            <li><strong>0{currency}</strong></li>
+                            <li><strong>{remainingMoney()}{currency}</strong></li>
                         </ul>
                     </Money>
                 </TripInfo>
                 <DetailMoney>
+                {hasSchedule ? 
+                <>
+                    {tripData.day && Object.keys(tripData.day).map((dayKey) => (
+                        <History key={dayKey} onClick={navigateDayHistory} data-key={dayKey}>
+                            <h3>{tripData.day[dayKey].dayTitle}</h3>
+                            <MoneyList>
+                                <table>
+                                    <colgroup>
+                                        <col />
+                                        <col style={{width:'30%'}}/>
+                                    </colgroup>
+                                    <tbody>
+                                        {tripData.day[dayKey].daySchedule.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{item.schedule}</td>
+                                                <td>{item.price}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <Total>
+                                    <span>총 지출금액 : <strong>{tripData.day[dayKey].totalCost}</strong>{currency}</span>
+                                </Total>
+                            </MoneyList>
+                        </History>
+                    ))}
+                    <button 
+                        className="add_list"
+                        onClick={naviagteAddDay}
+                    >추가하기
+                    </button>
+
+                </>
+                    :
                     <Empty>
                         <h3>일정을 추가해보세요!</h3>
                         <AddBox
                             onClick={naviagteAddDay}
                         />
                     </Empty>
-                    <History>
-                        <h3>ddd</h3>
-                        <MoneyList>
-                            <table>
-                                <colgroup>
-                                    <col />
-                                    <col style={{width:'30%'}}/>
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                    <tr>
-                                        <td>호핑투어</td>
-                                        <td>100페소</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <Total>
-                                <span>총 지출금액 : <strong>2000페소</strong></span>
-                            </Total>
-                        </MoneyList>
-                        <button className="add_list">추가하기</button>
-                    </History>
+                }
                 </DetailMoney>            
             </Wrap>
         </>

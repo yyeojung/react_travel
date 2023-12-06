@@ -45,22 +45,6 @@ function Header(props) {
                 </>
             }
         </Headers>
-
-        
-// {props.isMainPage ?   // 자꾸 안되서 이렇게 헤더까지 만들어서 해야하나 했는데 클래스 주는 방법으로 찾음!
-//     <Headers $isMainPage={true}>
-//         <h1>
-//             <Logo src={theme.logo}></Logo>
-//         </h1>
-//     </Headers>
-//     :
-//     <Headers>
-//         <Link to="#" onClick={props.onClick}>
-//             <Arrow/>
-//         </Link>
-//         <SubTxt>{props.subTitle}</SubTxt>
-//     </Headers>
-// }
     )
 }
 

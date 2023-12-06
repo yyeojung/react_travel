@@ -145,7 +145,7 @@ function TravelList(props) {
                             <Title>{trip.Title}</Title>
                             <Date>{trip.Date}<span>({trip.Period})</span></Date>
                         </div>
-                        <p>총지출 : <span>13,000,000원</span></p>
+                        <p>총지출 : <span>13,000,000{trip.Checkbox ? trip.Money : '원'}</span></p>
                     </List>
                 ))}
             </ul>
