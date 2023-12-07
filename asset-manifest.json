@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/react_travel/static/css/main.fbbc0ebc.css",
-    "main.js": "/react_travel/static/js/main.d20b5a34.js",
+    "main.css": "/react_travel/static/css/main.eb101da3.css",
+    "main.js": "/react_travel/static/js/main.573d8bf3.js",
     "static/media/NanumGothic-Regular.ttf": "/react_travel/static/media/NanumGothic-Regular.6c84540de7730f833d6c.ttf",
     "static/media/NanumGothic-Bold.ttf": "/react_travel/static/media/NanumGothic-Bold.6499af72b1d61fe8269d.ttf",
     "static/media/NanumGothic-ExtraBold.ttf": "/react_travel/static/media/NanumGothic-ExtraBold.d574713406e9230ba246.ttf",
     "index.html": "/react_travel/index.html",
-    "main.fbbc0ebc.css.map": "/react_travel/static/css/main.fbbc0ebc.css.map",
-    "main.d20b5a34.js.map": "/react_travel/static/js/main.d20b5a34.js.map"
+    "main.eb101da3.css.map": "/react_travel/static/css/main.eb101da3.css.map",
+    "main.573d8bf3.js.map": "/react_travel/static/js/main.573d8bf3.js.map"
   },
   "entrypoints": [
-    "static/css/main.fbbc0ebc.css",
-    "static/js/main.d20b5a34.js"
+    "static/css/main.eb101da3.css",
+    "static/js/main.573d8bf3.js"
   ]
 }
