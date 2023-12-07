@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 
@@ -98,19 +98,35 @@ const Country = styled.div`
 `
 function TravelList(props) {
     const navigate = useNavigate();
+    const [toggle, setToggle] = useState(false);
     const trips = JSON.parse(localStorage.getItem('trips')) || [];
+
     // trips를 날짜(Date) 기준으로 내림차순으로 정렬
     const tripDate = (dateString) => {
         const startDate = dateString.split(' - ')[0].replace(/\./g, ''); // "YYYY.MM.DD"에서 앞의 날짜 추출하고 점 제거
         return parseInt(startDate); // 숫자로 변환하여 반환
-    };
-    
+    };    
     const sortedTrips = trips.sort((a, b) => {
         const startDateA = tripDate(a.Date);
         const startDateB = tripDate(b.Date);
         return startDateB - startDateA;
     });
 
+    //토글 버튼 이벤트
+    const handleToggle = (id, isChecked) => {   
+
+        setToggle(prev => ({
+            ...prev,
+            [id]: isChecked
+        }));
+    }
+
+    //토글 환율 계산 이벤트
+    const handleCalRate = (trip) => {
+        const rateNum = parseFloat(trip.Rate?.replace(/\D/g, '') || '0');
+        const costNum = parseFloat(trip.tripTotalCost?.replace(/\D/g, '') || '0');
+        return (costNum * rateNum).toLocaleString();
+    }
     
     //가계부 페이지
     const navigateDetail = useCallback(
@@ -130,8 +146,13 @@ function TravelList(props) {
                         onClick={() => navigateDetail(trip.id)}
                     >
                         {trip.Checkbox &&
-                            <Country>
-                                <input type="checkbox" id={trip.id} />
+                            <Country onClick={(e) => e.stopPropagation()}>
+                                <input 
+                                    type="checkbox" 
+                                    id={trip.id} 
+                                    checked={toggle[trip.id] || false}
+                                    onChange={(e) => handleToggle(trip.id, e.target.checked)}
+                                />
                                 <label htmlFor={trip.id}></label>
                             </Country>                            
                         }
@@ -145,7 +166,24 @@ function TravelList(props) {
                             <Title>{trip.Title}</Title>
                             <Date>{trip.Date}<span>({trip.Period})</span></Date>
                         </div>
-                        <p>총지출 : <span>13,000,000{trip.Checkbox ? trip.Money : '원'}</span></p>
+                        <p>총지출 : 
+                            <span>
+                                {
+                                    !trip.Checkbox 
+                                    ? trip.tripTotalCost
+                                    : toggle[trip.id]
+                                        ? handleCalRate(trip)
+                                        : trip.tripTotalCost
+                                }
+                                {
+                                    !trip.Checkbox
+                                    ? '원'
+                                    : toggle[trip.id]
+                                        ? '원'
+                                        : trip.Money
+                                }
+                            </span>
+                        </p>
                     </List>
                 ))}
             </ul>

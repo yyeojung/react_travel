@@ -40,8 +40,8 @@ function App() {
                         <Route path="/trip/:tripId" element={<EditForm/>}></Route>
                     </Routes>
                 </Router>    
-                <Button onClick={darkMode}>dark</Button>        
-                <Button onClick={lightMode} style={{right:"50px"}}>light</Button>        
+                {/* <Button onClick={darkMode}>dark</Button>        
+                <Button onClick={lightMode} style={{right:"50px"}}>light</Button>         */}
             </div>
         </ThemeProvider>
     );

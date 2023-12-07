@@ -170,7 +170,7 @@ function HomeModal(props) {
             Rate : formData.Rate,
             VisibleBudget : formData.VisibleBudget,
             Checkbox : formData.Checkbox,
-            Money: currentValue
+            Money: currentValue,
         }
         if (tripId) { //여행지 수정 저장
             const getTrip = trips.map(trip => {

@@ -190,7 +190,7 @@ function DayMoney() {
                             price: item.price
                         }))
                     }
-                    const newDayKey = uuidv4();
+                    const newDayKey = uuidv4(); //일정별 키값 uuid로 설정
                     return {
                         ...trip,
                         day: {

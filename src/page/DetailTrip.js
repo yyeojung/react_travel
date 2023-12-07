@@ -142,7 +142,23 @@ function DetailTrip() {
                 }
             });
         }
-        return totalCost.toLocaleString();
+        const addTripTotalCost = totalCost.toLocaleString();
+
+        // 총 지출금액 로컬스토리지 저장
+        const trips = JSON.parse(localStorage.getItem('trips')) || [];
+        const updatedCost = trips.map((trip) => {
+            if (trip.id === tripId) {
+                return {
+                    ...trip,
+                    tripTotalCost: addTripTotalCost
+                };
+            }
+            return trip; //일치하지 않으면 기존 trip 반환(오류나서 수정 ㅜ)
+        })
+        localStorage.setItem('trips', JSON.stringify(updatedCost));
+
+        return addTripTotalCost;
+        
     }
     //남은 돈 계산
     const remainingMoney = () => {
@@ -152,6 +168,7 @@ function DetailTrip() {
 
         const deleteCommaCost = tripTotalCost().replace(/\D/g, '');
         const calculateMoney = totalBudget - deleteCommaCost;
+
         return calculateMoney.toLocaleString();
     }
     //새일정 추가
@@ -204,7 +221,7 @@ function DetailTrip() {
                 <>
                     {tripData.day && Object.keys(tripData.day).map((dayKey) => (
                         <History key={dayKey} onClick={navigateDayHistory} data-key={dayKey}>
-                            <h3>{tripData.day[dayKey].dayTitle}</h3>
+                            <h3 onClick={(e) => {e.stopPropagation();}}>{tripData.day[dayKey].dayTitle}</h3>
                             <MoneyList>
                                 <table>
                                     <colgroup>
