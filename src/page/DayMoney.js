@@ -251,7 +251,7 @@ function DayMoney() {
         const totalCost = () => {
             let total = 0;
             list.forEach((item) => {
-                const priceDeleteComma = item.price.replace(/\D/g, ''); // 콤마 제거
+                const priceDeleteComma = item.price.replace(/,/g, ''); // 콤마 제거
                 const priceNum = parseFloat(priceDeleteComma); // 숫자로 변환
                 if(!isNaN(priceNum)) {
                     total += priceNum;
@@ -281,13 +281,22 @@ function DayMoney() {
         
         //가격 숫자 콤마 추가
         if (name === 'price') {
-            const numberComma = value.replace(/\D/g, "");
-            const formattedValue = numberComma !== '' ? Number(numberComma).toLocaleString() : '';            
-            newList[index][name] = formattedValue;            
+            const [integerPart, decimalPart] = value.split('.'); //소수점 구분
+            let processedValue = integerPart.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (decimalPart !== undefined) { //소수점 있을 때
+                processedValue += '.' + decimalPart.replace(/\D/g, '');
+            }
+            newList[index][name] = processedValue;
         }
         setList(newList);
     }
 
+    //일정 엔터 누르면 일정 삭제되는 이벤트 막기
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    }
     //일정 삭제 이벤트
     const handleDeleteList = (index) => {
         const newList = [...list];
@@ -336,6 +345,7 @@ function DayMoney() {
                                             name='schedule'
                                             value={item.schedule}
                                             onChange={(e) => handleInputChange(index, e)}
+                                            onKeyDown={handleKeyPress}
                                         />
                                     </td>
                                     <td className='price'>
@@ -345,6 +355,7 @@ function DayMoney() {
                                             name='price'
                                             value={item.price}
                                             onChange={(e) => handleInputChange(index, e)}
+                                            onKeyDown={handleKeyPress}
                                         />
                                         <button 
                                             className='delete'

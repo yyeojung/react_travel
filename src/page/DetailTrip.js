@@ -135,7 +135,7 @@ function DetailTrip() {
         if (tripData.day) {
             const days = Object.values(tripData.day);
             days.forEach((day) => {
-                const deleteComma = day.totalCost.replace(/\D/g, ''); // 콤마 제거
+                const deleteComma = day.totalCost.replace(/,/g, ''); // 콤마 제거
                 const costNum = parseFloat(deleteComma); // 숫자로 변환
                 if(!isNaN(costNum)) {
                     totalCost += costNum;
@@ -162,15 +162,15 @@ function DetailTrip() {
     }
     //남은 돈 계산
     const remainingMoney = () => {
-        const totalBudget = tripData.Checkbox ? 
-        (tripData.VisibleBudget ? tripData.VisibleBudget.toString().replace(/\D/g, '') : '') :
-        (tripData.Budget ? tripData.Budget.toString().replace(/\D/g, '') : '');
-
-        const deleteCommaCost = tripTotalCost().replace(/\D/g, '');
-        const calculateMoney = totalBudget - deleteCommaCost;
-
+        const totalBudget = tripData.Checkbox ? tripData.VisibleBudget : tripData.Budget;
+        const budget = totalBudget ? Number(totalBudget.toString().replace(/,/g, '')) : 0;
+    
+        const deleteCommaCost = Number(tripTotalCost().replace(/,/g, ''));
+        const calculateMoney = budget - deleteCommaCost;
+    
         return calculateMoney.toLocaleString();
     }
+    
     //새일정 추가
     const naviagteAddDay = useCallback(
         () => navigate(`/detail/${tripId}/day`), [navigate, tripId]

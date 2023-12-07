@@ -123,8 +123,8 @@ function TravelList(props) {
 
     //토글 환율 계산 이벤트
     const handleCalRate = (trip) => {
-        const rateNum = parseFloat(trip.Rate?.replace(/\D/g, '') || '0');
-        const costNum = parseFloat(trip.tripTotalCost?.replace(/\D/g, '') || '0');
+        const rateNum = parseFloat(trip.Rate?.replace(/,/g, '') || '0');
+        const costNum = parseFloat(trip.tripTotalCost?.replace(/,/g, '') || '0');
         return (costNum * rateNum).toLocaleString();
     }
 

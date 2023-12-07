@@ -297,7 +297,7 @@ function HomeModal(props) {
             }    
             return prev;
         });
-    }, [formData.VisibleBudget, formData.Rate]); //노란줄 오류가 나와서 찾아봤더니 의존성 배열을 추가하라고 해서 추가함.
+    }, [formData.VisibleBudget, formData.Rate]); //의존성 배열 추가
     
 
     return (
