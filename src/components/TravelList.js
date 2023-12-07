@@ -127,6 +127,17 @@ function TravelList(props) {
         const costNum = parseFloat(trip.tripTotalCost?.replace(/\D/g, '') || '0');
         return (costNum * rateNum).toLocaleString();
     }
+
+    //지출금액 상태 이벤트
+    const getCost = (trip) => { //삼항연산자로 쓰려다 너무 길어져서 함수로
+        if (!trip.Checkbox) {
+            return trip.tripTotalCost || '0';
+        } else if (toggle[trip.id]) {
+            return handleCalRate(trip);
+        } else {
+            return trip.tripTotalCost || '0';
+        } //국내여행은 지출금액만 나오게 하고, 해외여행은 지출금액과 원화 계산/ 지출금액 없으면 0
+    }
     
     //가계부 페이지
     const navigateDetail = useCallback(
@@ -168,13 +179,7 @@ function TravelList(props) {
                         </div>
                         <p>총지출 : 
                             <span>
-                                {
-                                    !trip.Checkbox 
-                                    ? trip.tripTotalCost
-                                    : toggle[trip.id]
-                                        ? handleCalRate(trip)
-                                        : trip.tripTotalCost
-                                }
+                                {getCost(trip)}
                                 {
                                     !trip.Checkbox
                                     ? '원'
